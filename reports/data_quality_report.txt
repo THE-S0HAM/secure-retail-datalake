@@ -1,0 +1,25 @@
+SECURE RETAIL DATA LAKEHOUSE - DATA QUALITY REPORT
+
+Dataset: customers
+Rows: 20
+Columns: 11
+Missing values: 0
+Duplicates: 0
+
+Dataset: products
+Rows: 10
+Columns: 4
+Missing values: 0
+Duplicates: 0
+
+Dataset: transactions
+Rows: 60
+Columns: 10
+Missing values: 0
+Duplicates: 0
+
+Validation status: PASS
+Privacy checks: PASS
+Overall status: PASS
+
+PASS: all raw data checks passed

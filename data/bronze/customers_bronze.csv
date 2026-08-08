@@ -1,0 +1,30 @@
+customer_id,first_name,last_name,email,phone,address,city,state,postal_code,date_of_birth,loyalty_tier,ingestion_timestamp,run_id
+C00001,Isaac,Bakshi,isaac.bakshi1@example.com,1819600133,"38/63, Mall Chowk",Kozhikode,Tamil Nadu,542351,1955-12-24,Bronze,2026-08-08T20:09:31.962442+00:00,run_20260808_200931
+C00002,Gunbir,Parmer,gunbir.parmer2@example.com,7816184959,"10/341, Chaudhuri Ganj",Alwar,Manipur,255341,1985-12-06,Bronze,2026-08-08T20:09:31.962442+00:00,run_20260808_200931
+C00003,Onveer,Walla,onveer.walla3@example.com,4835030564,"953, Randhawa Chowk",Asansol,Himachal Pradesh,388496,2002-09-04,Gold,2026-08-08T20:09:31.962442+00:00,run_20260808_200931
+C00004,Mohini,Pathak,mohini.pathak4@example.com,1012269166,"48/01
+Loke Circle",Gorakhpur,Jharkhand,270482,1980-01-18,Silver,2026-08-08T20:09:31.962442+00:00,run_20260808_200931
+C00005,Hitesh,Misra,hitesh.misra5@example.com,8809570154,"H.No. 391, Sunder Zila",Katihar,Tripura,278248,2001-03-15,Silver,2026-08-08T20:09:31.962442+00:00,run_20260808_200931
+C00006,Pallavi,Kakar,pallavi.kakar6@example.com,7871331509,"30/10, Bir Ganj",Bathinda,Assam,473829,1984-01-09,Silver,2026-08-08T20:09:31.962442+00:00,run_20260808_200931
+C00007,Xavier,Solanki,xavier.solanki7@example.com,6566701065,"338, Dey Chowk",South Dumdum,Himachal Pradesh,317810,1988-06-04,Bronze,2026-08-08T20:09:31.962442+00:00,run_20260808_200931
+C00008,Alexander,Chander,alexander.chander8@example.com,7360260647,"87
+Gupta Street",Bellary,Arunachal Pradesh,500978,2003-12-05,Bronze,2026-08-08T20:09:31.962442+00:00,run_20260808_200931
+C00009,Nakul,Bhandari,nakul.bhandari9@example.com,1361939909,"99, Mutti Circle",Kurnool,Sikkim,346247,1968-12-09,Platinum,2026-08-08T20:09:31.962442+00:00,run_20260808_200931
+C00010,Elijah,Andra,elijah.andra10@example.com,1838425135,"784
+Wadhwa",Begusarai,Jharkhand,241182,1966-05-25,Bronze,2026-08-08T20:09:31.962442+00:00,run_20260808_200931
+C00011,Shivansh,Oza,shivansh.oza11@example.com,4016400524,"78/680, Borra Zila",Bongaigaon,Arunachal Pradesh,982620,1968-06-24,Bronze,2026-08-08T20:09:31.962442+00:00,run_20260808_200931
+C00012,Balveer,Parmar,balveer.parmar12@example.com,8692322602,"34
+Chokshi Street",Agra,West Bengal,337543,1963-07-13,Bronze,2026-08-08T20:09:31.962442+00:00,run_20260808_200931
+C00013,Reyansh,Rastogi,reyansh.rastogi13@example.com,5868501429,"H.No. 196
+Murthy Path",Medininagar,Mizoram,693406,1950-09-12,Silver,2026-08-08T20:09:31.962442+00:00,run_20260808_200931
+C00014,Ronith,Patla,ronith.patla14@example.com,5148465648,"662, Mitra",Motihari,Uttarakhand,443699,1988-07-28,Silver,2026-08-08T20:09:31.962442+00:00,run_20260808_200931
+C00015,Udyati,Sathe,udyati.sathe15@example.com,2148951343,"003, Bora Chowk",Vijayanagaram,Rajasthan,676320,2002-05-17,Bronze,2026-08-08T20:09:31.962442+00:00,run_20260808_200931
+C00016,Hredhaan,Sandal,hredhaan.sandal16@example.com,0831727889,"98
+Sehgal Marg",Fatehpur,Manipur,348734,1976-02-11,Silver,2026-08-08T20:09:31.962442+00:00,run_20260808_200931
+C00017,Bhavika,Keer,bhavika.keer17@example.com,1223623166,"76/03
+Ramachandran Marg",Ramgarh,Madhya Pradesh,054668,1993-12-16,Platinum,2026-08-08T20:09:31.962442+00:00,run_20260808_200931
+C00018,Thomas,Sura,thomas.sura18@example.com,0656272980,"90/16
+Shenoy Street",Dhanbad,Himachal Pradesh,537556,1966-09-27,Silver,2026-08-08T20:09:31.962442+00:00,run_20260808_200931
+C00019,Oviya,Krishnan,oviya.krishnan19@example.com,0531003309,"271, Kamdar",Bardhaman,Tripura,299124,1956-11-14,Platinum,2026-08-08T20:09:31.962442+00:00,run_20260808_200931
+C00020,Atharv,Muni,atharv.muni20@example.com,9314919058,"51/850
+Suri Marg",Bhiwani,Kerala,262849,1997-06-23,Gold,2026-08-08T20:09:31.962442+00:00,run_20260808_200931
