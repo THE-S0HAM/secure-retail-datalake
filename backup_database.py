@@ -9,9 +9,9 @@ from config.settings import BACKUPS_DIR, ensure_directories
 def backup_database():
     ensure_directories()
     filename = BACKUPS_DIR / f"secure_retail_backup_{datetime.now():%Y%m%d_%H%M%S}.sql"
-    command = ["pg_dump", "-h", os.getenv("DB_HOST", "localhost"), "-p", os.getenv("DB_PORT", "5432"), "-U", os.getenv("DB_USER", "postgres"), "-d", os.getenv("DB_NAME", "secure_retail_lakehouse"), "-f", str(filename)]
+    command = ["pg_dump", "-h", os.environ["DB_HOST"], "-p", os.environ["DB_PORT"], "-U", os.environ["DB_USER"], "-d", os.environ["DB_NAME"], "-f", str(filename)]
     environment = os.environ.copy()
-    environment["PGPASSWORD"] = os.getenv("DB_PASSWORD", "")
+    environment["PGPASSWORD"] = os.environ["DB_PASSWORD"]
     subprocess.run(command, check=True, env=environment)
     print(f"Backup created: {filename}")
 

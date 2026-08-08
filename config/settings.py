@@ -41,7 +41,7 @@ def configure_logging():
 
 def db_url():
     return "postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}".format(
-        user=os.getenv("DB_USER", "postgres"), password=os.getenv("DB_PASSWORD", "change_me"),
-        host=os.getenv("DB_HOST", "localhost"), port=os.getenv("DB_PORT", "5432"),
-        database=os.getenv("DB_NAME", "secure_retail_lakehouse"),
+        user=os.environ["DB_USER"], password=os.environ["DB_PASSWORD"],
+        host=os.environ["DB_HOST"], port=os.environ["DB_PORT"],
+        database=os.environ["DB_NAME"],
     )

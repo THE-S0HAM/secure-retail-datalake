@@ -2,9 +2,9 @@ services:
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-secure_retail_lakehouse}
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change_me}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -21,14 +21,14 @@ services:
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_NAME: ${POSTGRES_DB:-secure_retail_lakehouse}
-      DB_USER: ${POSTGRES_USER:-postgres}
-      DB_PASSWORD: ${POSTGRES_PASSWORD:-change_me}
+      DB_NAME: ${POSTGRES_DB}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
       HASH_SALT: ${HASH_SALT}
-      CUSTOMER_COUNT: ${CUSTOMER_COUNT:-1000}
-      TRANSACTION_COUNT: ${TRANSACTION_COUNT:-5000}
-      PRODUCT_COUNT: ${PRODUCT_COUNT:-100}
-      DB_REQUIRED: "true"
+      CUSTOMER_COUNT: ${CUSTOMER_COUNT}
+      TRANSACTION_COUNT: ${TRANSACTION_COUNT}
+      PRODUCT_COUNT: ${PRODUCT_COUNT}
+      DB_REQUIRED: ${DB_REQUIRED}
     volumes:
       - ./data:/app/data
       - ./reports:/app/reports
