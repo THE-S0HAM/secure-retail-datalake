@@ -1,15 +1,15 @@
 PIPELINE METRICS REPORT
-run_id: run_20260808_200931
-start_time: 2026-08-08T20:09:31.743687
-end_time: 2026-08-08T20:09:32.586149
-total_duration_seconds: 0.84
-customers_generated: 20
-products_generated: 10
-transactions_generated: 60
-bronze_rows: 90
-silver_rows: 90
-gold_rows: 105
-database_rows_loaded: 105
+run_id: run_20260808_212843
+start_time: 2026-08-08T21:28:43.586324
+end_time: 2026-08-08T21:29:00.025789
+total_duration_seconds: 16.44
+customers_generated: 10000
+products_generated: 1000
+transactions_generated: 50000
+bronze_rows: 61000
+silver_rows: 61000
+gold_rows: 69939
+database_rows_loaded: 69939
 validation_status: PASS
 pipeline_status: SUCCESS
 database status: PASS

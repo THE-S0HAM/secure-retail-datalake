@@ -8,6 +8,7 @@ from config.settings import BACKUPS_DIR, ensure_directories
 
 def backup_database():
     ensure_directories()
+    os.umask(0o077)
     filename = BACKUPS_DIR / f"secure_retail_backup_{datetime.now():%Y%m%d_%H%M%S}.sql"
     command = ["pg_dump", "-h", os.environ["DB_HOST"], "-p", os.environ["DB_PORT"], "-U", os.environ["DB_USER"], "-d", os.environ["DB_NAME"], "-f", str(filename)]
     environment = os.environ.copy()

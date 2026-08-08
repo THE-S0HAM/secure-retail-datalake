@@ -12,7 +12,7 @@ from scripts.bronze_layer import create_bronze_layer
 from scripts.silver_layer import create_silver_layer
 from scripts.gold_layer import create_gold_layer
 from scripts.database_loader import load_gold_data
-from scripts.generate_reports import privacy_checks, write_data_quality_report, write_pipeline_reports
+from scripts.generate_reports import privacy_checks, write_validation_report, write_data_quality_report, write_pipeline_reports
 from health_check import run_health_check
 
 
@@ -28,6 +28,8 @@ def print_summary(run_id, stages, success, failed_stage="", reason=""):
 
 def run_pipeline():
     ensure_directories()
+    failure_report = REPORTS_DIR / "pipeline_failure_report.txt"
+    if failure_report.exists(): failure_report.unlink()
     logger, run_id, started = configure_logging(), get_run_id(), time.perf_counter()
     started_at, stages = datetime.now().isoformat(), {}
     logger.info("Pipeline started | run_id=%s", run_id)
@@ -44,6 +46,7 @@ def run_pipeline():
         logger.info("Raw data written | customers=%s products=%s transactions=%s", len(customers), len(products), len(transactions))
         current_stage = "Validation"
         validation = validate_data(customers, products, transactions)
+        write_validation_report(validation)
         if validation["status"] != "PASS":
             write_data_quality_report(raw, validation, {"status": "NOT RUN", "errors": []})
             raise ValueError("; ".join(validation["errors"]))

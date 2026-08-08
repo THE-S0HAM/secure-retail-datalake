@@ -3,6 +3,7 @@ from datetime import datetime
 from pathlib import Path
 import logging
 import os
+from sqlalchemy.engine import URL
 from dotenv import load_dotenv
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
@@ -40,8 +41,12 @@ def configure_logging():
 
 
 def db_url():
-    return "postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}".format(
-        user=os.environ["DB_USER"], password=os.environ["DB_PASSWORD"],
-        host=os.environ["DB_HOST"], port=os.environ["DB_PORT"],
+    """Build a PostgreSQL URL without exposing special characters in credentials."""
+    return URL.create(
+        "postgresql+psycopg2",
+        username=os.environ["DB_USER"],
+        password=os.environ["DB_PASSWORD"],
+        host=os.environ["DB_HOST"],
+        port=int(os.environ["DB_PORT"]),
         database=os.environ["DB_NAME"],
     )

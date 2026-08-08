@@ -13,9 +13,19 @@ def privacy_checks(bronze, silver, gold):
         found = prohibited & set(frame.columns)
         if found: errors.append(f"Gold {frame_name} contains {sorted(found)}")
     customers = gold["customers_gold"]
-    if not {"email_token", "phone_token"}.issubset(customers.columns): errors.append("Gold customer tokens are missing")
-    if not customers.empty and not customers["email_token"].iloc[0]: errors.append("Gold email token is empty")
+    token_columns = {"email_token", "phone_token"}
+    if not token_columns.issubset(customers.columns):
+        errors.append("Gold customer tokens are missing")
+    elif customers.empty or customers[list(token_columns)].isna().any().any() or (customers[list(token_columns)] == "").any().any():
+        errors.append("Gold customer tokens contain empty values")
     return {"status": "FAIL" if errors else "PASS", "errors": errors}
+
+
+def write_validation_report(validation):
+    """Write source validation findings before Bronze processing."""
+    ensure_directories()
+    lines = ["SECURE RETAIL DATA LAKEHOUSE - VALIDATION REPORT", "", f"Validation status: {validation['status']}", "", *validation["findings"]]
+    (REPORTS_DIR / "validation_report.txt").write_text("\n".join(lines), encoding="utf-8")
 
 
 def write_data_quality_report(raw, validation, privacy):

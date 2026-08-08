@@ -1,0 +1,5 @@
+SECURE RETAIL DATA LAKEHOUSE - VALIDATION REPORT
+
+Validation status: PASS
+
+PASS: all raw data checks passed

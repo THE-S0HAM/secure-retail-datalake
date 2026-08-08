@@ -1,19 +1,19 @@
 SECURE RETAIL DATA LAKEHOUSE - DATA QUALITY REPORT
 
 Dataset: customers
-Rows: 20
+Rows: 10000
 Columns: 11
 Missing values: 0
 Duplicates: 0
 
 Dataset: products
-Rows: 10
+Rows: 1000
 Columns: 4
 Missing values: 0
 Duplicates: 0
 
 Dataset: transactions
-Rows: 60
+Rows: 50000
 Columns: 10
 Missing values: 0
 Duplicates: 0

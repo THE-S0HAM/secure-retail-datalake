@@ -1,58 +1,170 @@
 # Secure Retail Data Lakehouse
 
-An internship-level secure batch Data Engineering pipeline with privacy-preserving transformations and Azure VM deployment. It generates repeatable synthetic retail data, applies a Raw → Bronze → Silver → Gold workflow, and loads analytics datasets into PostgreSQL.
+A Python-based Data Engineering project that implements a secure layered ETL pipeline: **Raw → Bronze → Silver → Gold**. It combines synthetic retail data generation, validation, privacy-preserving transformations, SHA-256 tokenization, PostgreSQL loading, and automated reports.
 
-## Problem and objectives
-Retail source data includes customer PII and payment information. This project demonstrates a simple batch workflow that preserves restricted source data in Raw, removes CVV in Bronze, masks and tokenizes PII in Silver, and publishes privacy-reduced datasets in Gold.
+## Project overview
+Secure Retail Data Lakehouse is the final project for the **Celebal Excellence Internship 2026**. It simulates how a retail organization can process customer and transaction data securely before exposing analytics-ready datasets.
 
-Objectives: generate realistic synthetic data; validate it before processing; protect PII; provide useful retail summaries; create text/HTML reports; load rerunnable current-state tables to PostgreSQL; and support local Docker/Azure VM execution.
+The pipeline generates realistic synthetic retail data, validates it, organizes it in a Medallion Architecture, protects personal information, loads final Gold datasets into PostgreSQL, and creates execution and data-quality reports. The code is intentionally modular, readable, and suitable for an internship-level Data Engineering project.
 
-## Architecture and data flow
+## Problem statement
+Retail systems contain customer names, email addresses, phone numbers, payment details, and transaction history. Making this source data directly available to analysts creates privacy risks. This project demonstrates a batch ETL workflow that removes or reduces sensitive data exposure while preserving useful analytics fields.
+
+## Objectives
+- Build a Raw, Bronze, Silver, and Gold ETL pipeline.
+- Generate repeatable synthetic product, customer, and transaction data.
+- Validate source data before downstream processing.
+- Remove, mask, redact, tokenize, and generalize sensitive values.
+- Create customer and sales summaries for analysis.
+- Load Gold datasets into PostgreSQL.
+- Generate validation, quality, metrics, and HTML reports.
+
+## Key features
+- Synthetic retail data generation using Faker.
+- Configurable row counts through environment variables.
+- Required-column, relationship, duplicate, numeric, date, and email validation.
+- CVV hard drop in Bronze.
+- PII masking, address redaction, and salted SHA-256 tokens in Silver.
+- Age groups, amount buckets, postal-code generalization, and summaries in Gold.
+- Idempotent PostgreSQL full-refresh loading.
+- Docker Compose deployment with an internal PostgreSQL service.
+- Pytest coverage for important generation, validation, privacy, and URL-handling rules.
+
+## Architecture
+```text
+Product master generation
+          ↓
+Customer data generation
+          ↓
+Transaction data generation
+          ↓
+Data validation
+          ↓
+Raw → Bronze → Silver → Gold → PostgreSQL → Reports
 ```
-Products + Customers + Transactions
-            ↓ validation
-Raw (restricted CSV source files)
-            ↓ CVV hard drop + lineage
-Bronze
-            ↓ masking, redaction, SHA-256 salted tokens
-Silver
-            ↓ age, postal generalization, summaries
-Gold → PostgreSQL → reports
-```
 
-Raw is intentionally unmasked to simulate a source system. It is restricted and must not be exposed to analytics users. The current CSV files are overwritten on each run for simplicity; `run_id` and `ingestion_timestamp` preserve transformed-layer lineage. PostgreSQL uses replace loads, preventing duplicate current-state rows on reruns.
+The complete workflow is executed with:
+
+```bash
+python run_pipeline.py
+```
 
 ## Technology stack
-Python 3.10+, Pandas, PostgreSQL, SQLAlchemy, Faker, hashlib, python-dotenv, pytest, Docker, Docker Compose, and HTML/text reports.
+| Category | Technologies |
+|---|---|
+| Programming language | Python 3.11 |
+| Data processing | Pandas |
+| Database | PostgreSQL 16 |
+| Database access | SQLAlchemy and psycopg2 |
+| Synthetic data | Faker |
+| Security | hashlib SHA-256 and python-dotenv |
+| Testing | pytest |
+| Deployment | Docker and Docker Compose |
+| Version control | Git and GitHub |
 
 ## Project structure
+```text
+secure-retail-datalake/
+├── config/                     # Environment and path helpers
+├── data/{raw,bronze,silver,gold}/
+├── master_data/                # Product master copy
+├── reports/                    # Text and HTML pipeline reports
+├── logs/                       # Pipeline log output
+├── backups/                    # Timestamped PostgreSQL dumps
+├── database/                   # Database notes
+├── deploy/                     # Ubuntu VM setup, deploy, and backup scripts
+├── scripts/
+│   ├── generators/             # Product, customer, transaction, validation modules
+│   ├── bronze_layer.py
+│   ├── silver_layer.py
+│   ├── gold_layer.py
+│   ├── database_loader.py
+│   └── generate_reports.py
+├── tests/                      # Pytest business-rule tests
+├── run_pipeline.py             # Complete pipeline entry point
+├── health_check.py             # Environment and database readiness check
+├── backup_database.py          # PostgreSQL backup utility
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+├── .env.example
+└── .gitignore
 ```
-data/{raw,bronze,silver,gold}/     Layer CSV outputs
-master_data/                       Product master copy
-reports/ logs/ backups/            Operational outputs
-database/                          Database notes
-deploy/                            Azure Ubuntu scripts
-scripts/generators/                Source generators and validation
-scripts/{bronze,silver,gold}_layer.py
-scripts/database_loader.py         PostgreSQL loader
-scripts/generate_reports.py        Data quality and HTML reports
-tests/                             pytest checks
-run_pipeline.py                    Complete pipeline entry point
-health_check.py                    Environment/database check
-backup_database.py                 pg_dump wrapper
-```
+
+## Medallion pipeline
+### Raw layer
+The Raw layer stores the generated source data exactly as created. It is restricted source-system data and must not be exposed to analytics users.
+
+Files:
+- `data/raw/customers.csv`
+- `data/raw/products.csv`
+- `data/raw/transactions.csv`
+
+### Bronze layer
+Bronze is the first security and lineage boundary. It removes CVV, adds a UTC ingestion timestamp, and adds a timestamp-based pipeline `run_id`.
+
+Files:
+- `data/bronze/customers_bronze.csv`
+- `data/bronze/products_bronze.csv`
+- `data/bronze/transactions_bronze.csv`
+
+### Silver layer
+Silver protects PII while preserving data needed for later analytics. Names, emails, phone numbers, and card numbers are masked. Full addresses and exact dates of birth are removed. Email and phone tokens are created with SHA-256 and the `HASH_SALT` environment variable.
+
+Files:
+- `data/silver/customers_silver.csv`
+- `data/silver/products_silver.csv`
+- `data/silver/transactions_silver.csv`
+
+### Gold layer
+Gold contains analytics-ready datasets. It calculates age from the retained birth year, creates age groups and transaction amount buckets, generalizes postal codes such as `560103` to `560XXX`, and creates customer and sales summaries.
+
+Files:
+- `data/gold/customers_gold.csv`
+- `data/gold/transactions_gold.csv`
+- `data/gold/customer_summary.csv`
+- `data/gold/sales_summary.csv`
 
 ## Privacy strategy
-- **Bronze:** CVV is permanently dropped before the output CSV is written. Remaining fields receive `run_id` and UTC `ingestion_timestamp`.
-- **Silver:** customer names become `***`; emails retain only first character/domain; phones and cards retain only four trailing digits. Full addresses are removed. SHA-256 tokens are created for email and phone using `HASH_SALT` from `.env`.
-- **Gold:** date of birth, full address, raw/masked email, raw/masked phone, card number, and CVV are absent. Postal codes become `560XXX`. Gold keeps tokens, loyalty tiers, calculated ages, age groups, and analytics fields.
+| Technique | Purpose | Status |
+|---|---|---|
+| Hard drop | Remove CVV before it reaches Bronze | Implemented |
+| Data masking | Reduce visibility of names, emails, phones, and cards | Implemented |
+| Data redaction | Remove the full customer address | Implemented |
+| SHA-256 tokenization | Create deterministic email and phone identifiers | Implemented |
+| Generalization | Remove exact DOB and generalize postal codes | Implemented |
+| Aggregation | Create business summaries | Implemented |
 
-The data-quality report checks required columns, missing data, duplicate records, IDs, references, dates, amounts, and quantities. Privacy checks enforce CVV removal and Gold forbidden-column rules. Any critical validation or privacy failure stops downstream processing.
+Gold does not contain `date_of_birth`, CVV, card number, full address, raw email, or raw phone columns. This is an educational privacy implementation for synthetic data; it is not a claim of production-grade security.
 
-## Local setup and run
-Prerequisites: Python 3.10+ and a reachable PostgreSQL instance for full database execution.
+## PostgreSQL integration
+The Gold datasets are loaded into the following PostgreSQL tables using SQLAlchemy:
 
-**PowerShell (Windows):**
+| Table | Description |
+|---|---|
+| `customers_gold` | Privacy-reduced customer analytics dataset |
+| `transactions_gold` | Privacy-reduced transaction dataset |
+| `customer_summary` | Spending and transaction summary by customer |
+| `sales_summary` | Sales summary by product category |
+
+The project uses `replace` mode for a simple, idempotent full-refresh load. It is appropriate for this internship project but not a replacement for production database migrations or incremental loading.
+
+## Reports
+The pipeline creates these files under `reports/`:
+
+| Report | Purpose |
+|---|---|
+| `validation_report.txt` | Source validation findings before Bronze processing |
+| `data_quality_report.txt` | Row counts, columns, missing values, duplicates, and quality status |
+| `pipeline_metrics_report.txt` | Run ID, timing, layer row counts, and database load counts |
+| `pipeline_summary.html` | Basic HTML execution summary |
+
+Reports do not include database passwords, `HASH_SALT`, CVV, or raw payment details.
+
+## Local setup
+Prerequisites: Python 3.11+, Docker Desktop for the Docker option, and PostgreSQL only when running outside Docker.
+
+### Windows PowerShell
 ```powershell
 cd "C:\path\to\secure-retail-datalake"
 python -m venv venv
@@ -60,65 +172,84 @@ python -m venv venv
 python -m pip install -r requirements.txt
 Copy-Item .env.example .env
 ```
-Edit `.env`: set a long random `HASH_SALT`, PostgreSQL credentials, and data counts. Keep `DB_REQUIRED=true` for a complete run. Then run:
+
+Set non-empty database credentials and `HASH_SALT` in `.env`. The file is ignored by Git and must never be committed.
+
+Run the pipeline:
 ```powershell
 python run_pipeline.py
 python health_check.py
 python -m pytest -q
 ```
 
-The complete entry point is `python run_pipeline.py`. It generates products, customers, transactions, Raw, Bronze, Silver, Gold, quality reports, and—when `DB_REQUIRED=true`—the four PostgreSQL Gold tables. `DB_REQUIRED=false` is an explicit local CSV-only development option; database loading is reported as skipped, never passed.
+The supported complete entry point is `python run_pipeline.py`. The internal modules are designed for reuse by the pipeline; running every layer script directly is not the supported workflow.
 
-Outputs include `reports/data_quality_report.txt`, `reports/pipeline_metrics_report.txt`, `reports/pipeline_summary.html`, and `logs/pipeline.log`.
+## Docker usage
+Docker Compose starts PostgreSQL internally and runs the pipeline in a separate Python container. PostgreSQL has no host port mapping.
 
-## PostgreSQL and backup
-The loader creates/replaces `customers_gold`, `transactions_gold`, `customer_summary`, and `sales_summary` through SQLAlchemy. Verify it with `python health_check.py`; it checks connection and all expected tables. Create a dump where `pg_dump` is installed:
-```powershell
-python backup_database.py
-```
-Backups are timestamped under `backups/`.
-
-## Docker
-Create `.env` from `.env.example`, set `HASH_SALT` and strong PostgreSQL passwords, then:
 ```bash
-docker compose build
-docker compose up -d postgres
-docker compose run --rm retail_pipeline python run_pipeline.py
-docker compose run --rm retail_pipeline python health_check.py
+cp .env.example .env
+# Edit .env and set secure values.
+
+docker compose -p secure-retail-datalake build
+docker compose -p secure-retail-datalake up -d postgres
+docker compose -p secure-retail-datalake run --rm retail_pipeline python run_pipeline.py
+docker compose -p secure-retail-datalake run --rm retail_pipeline python health_check.py
 ```
-`retail_pipeline` uses `DB_HOST=postgres`, not localhost. PostgreSQL has no host `ports` mapping, so it is only reachable by Compose services. The named `postgres_data` volume persists database data. To clean up containers without deleting the database volume: `docker compose down`.
+
+Create a backup:
+```bash
+docker compose -p secure-retail-datalake run --rm retail_pipeline python backup_database.py
+```
+
+The `postgres_data` volume persists the Secure Retail database. To stop only this project while preserving the database volume:
+```bash
+docker compose -p secure-retail-datalake down
+```
+Never use `down -v` unless deleting this project database is intentional.
 
 ## Azure Ubuntu VM deployment
-1. Create an Ubuntu VM with SSH key authentication. In its NSG, allow inbound TCP 22 only from trusted IP ranges. Do **not** create a PostgreSQL (5432) inbound rule.
-2. Connect by SSH and install Docker:
+This project is designed to coexist with other Docker applications on an Azure VM. Every command uses the isolated Compose project name `secure-retail-datalake`; the project does not stop, remove, or modify unrelated containers, volumes, networks, Fabric services, Nginx sites, or certificates.
+
 ```bash
-sudo apt-get update && sudo apt-get install -y git
-# Clone the repository first, then execute its setup script:
-git clone <your-github-repository-url> secure-retail-datalake
+git clone https://github.com/THE-S0HAM/secure-retail-datalake.git
 cd secure-retail-datalake
 chmod +x deploy/*.sh
 ./deploy/setup_vm.sh
-exit
 ```
-3. SSH in again (the Docker group change then applies), create secrets, and deploy:
+
+Sign out and sign in again after Docker installation, then configure and deploy:
 ```bash
-cd secure-retail-datalake
 cp .env.example .env
-nano .env                 # set DB_PASSWORD, POSTGRES_PASSWORD, HASH_SALT
+nano .env
 ./deploy/deploy.sh
 ```
-4. Review `reports/`, `logs/pipeline.log`, and use `./deploy/backup_database.sh` for a database dump.
 
-Security recommendations: use SSH keys rather than passwords; restrict SSH through the Azure NSG; never expose PostgreSQL publicly; store `.env` only on the VM; use strong unique secrets; limit VM user access; and apply regular OS/Docker updates. Database passwords and `HASH_SALT` are not in source code or the Dockerfile. This is not claimed to be production-grade security.
+Azure recommendations:
+- Use SSH keys and restrict port 22 to trusted IP ranges in the NSG.
+- Do not expose PostgreSQL port 5432 publicly.
+- Keep `.env` only on the VM.
+- Use strong, unique database passwords and a long `HASH_SALT`.
+- Do not overwrite `/etc/nginx/nginx.conf` or unrelated Nginx sites. This batch project does not require Nginx.
 
-## Testing and troubleshooting
-Run `python -m pytest -q`. Tests cover generation, source validation, CVV hard-drop, masking, address redaction, deterministic tokenization, Gold privacy, age bands, amount buckets, and postal-code generalization.
+## Security notes
+- Secrets are supplied through `.env`, never Python source code.
+- `.env`, backups, logs, caches, and generated data are excluded from the Docker build context.
+- `.env` and backup SQL files are ignored by Git.
+- The Docker image includes `postgresql-client` so `pg_dump` is available for backups.
+- PostgreSQL stays on the private Compose network; containers use the hostname `postgres`, not `localhost`.
 
-Common issues:
-- **`HASH_SALT must be set`:** create `.env` and set a non-empty salt.
-- **PostgreSQL connection error:** start PostgreSQL, verify `DB_HOST/PORT/NAME/USER/PASSWORD`, then run `python health_check.py`.
-- **Docker pipeline cannot connect:** run it through Compose, where the database hostname is `postgres`.
-- **Validation failure:** inspect `reports/data_quality_report.txt` and `logs/pipeline.log`; Bronze and later layers will not run.
+## Learning outcomes and future scope
+This project demonstrates Medallion Architecture, synthetic data generation, data quality validation, PII protection, SHA-256 tokenization, feature engineering, SQLAlchemy loading, PostgreSQL backups, Docker deployment, and automated reporting.
 
-## Known limitations and future scope
-This is a full-refresh batch project with CSV storage and `replace` table loads. It has no scheduling, incremental processing, data catalog, encryption-at-rest configuration, user access controls, secret manager, or production monitoring. Suitable future improvements include Azure Key Vault, managed PostgreSQL, managed identity, schema migrations, automated CI, retention controls, role-based access, and incremental loads.
+Possible future improvements include incremental loads, richer quality rules, Power BI/Tableau dashboards, Azure Key Vault, managed PostgreSQL, role-based access control, CI/CD, and monitoring.
+
+## Author
+**Soham Deshmukh**  
+Celebal Excellence Internship 2026
+
+## Acknowledgements
+Thanks to Celebal Technologies, internship mentors, and the open-source communities behind Python, Pandas, SQLAlchemy, Faker, PostgreSQL, and Docker.
+
+## License
+Developed for educational and internship purposes. You may explore and adapt it for academic learning.
