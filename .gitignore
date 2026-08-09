@@ -1,8 +1,25 @@
 .env
 venv/
+.venv/
 __pycache__/
 *.pyc
 .pytest_cache/
-logs/*.log
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+data/
+reports/
+logs/
 backups/*.sql
+.vscode/
+.idea/
+*.tmp
+*.zip
 .DS_Store
+
+# Final GitHub submission intentionally includes generated synthetic data and reports.
+!submission/data/
+!submission/data/**
+!submission/reports/
+!submission/reports/**

@@ -1,0 +1,11 @@
+SECURE RETAIL DATA LAKEHOUSE - PIPELINE METRICS
+
+pipeline_run_id: run_20260809_052657_cc1b16cd
+execution_time_seconds: 14.28
+raw_row_counts: {'customers': 10000, 'products': 1000, 'transactions': 50000}
+bronze_row_counts: {'customers': 10000, 'products': 1000, 'transactions': 50000}
+silver_row_counts: {'customers': 10000, 'products': 1000, 'transactions': 50000}
+gold_row_counts: {'customers_gold': 10000, 'transactions_gold': 50000, 'customer_summary': 9934, 'sales_summary': 5}
+database_load_counts: {'customers_gold': 10000, 'transactions_gold': 50000, 'customer_summary': 9934, 'sales_summary': 5}
+validation_status: PASS
+privacy_status: PASS

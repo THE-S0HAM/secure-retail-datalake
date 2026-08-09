@@ -11,8 +11,9 @@ services:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 12
     restart: unless-stopped
+
   retail_pipeline:
     build: .
     depends_on:
@@ -25,15 +26,16 @@ services:
       DB_USER: ${POSTGRES_USER}
       DB_PASSWORD: ${POSTGRES_PASSWORD}
       HASH_SALT: ${HASH_SALT}
-      CUSTOMER_COUNT: ${CUSTOMER_COUNT}
-      TRANSACTION_COUNT: ${TRANSACTION_COUNT}
-      PRODUCT_COUNT: ${PRODUCT_COUNT}
-      DB_REQUIRED: ${DB_REQUIRED}
+      CUSTOMER_COUNT: ${CUSTOMER_COUNT:-10000}
+      TRANSACTION_COUNT: ${TRANSACTION_COUNT:-50000}
+      PRODUCT_COUNT: ${PRODUCT_COUNT:-1000}
+      DB_REQUIRED: ${DB_REQUIRED:-true}
     volumes:
       - ./data:/app/data
       - ./reports:/app/reports
       - ./logs:/app/logs
       - ./backups:/app/backups
     restart: "no"
+
 volumes:
   postgres_data:

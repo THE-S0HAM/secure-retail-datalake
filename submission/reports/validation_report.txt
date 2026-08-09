@@ -1,0 +1,6 @@
+SECURE RETAIL DATA LAKEHOUSE - VALIDATION REPORT
+
+Pipeline run ID: run_20260809_052657_cc1b16cd
+Validation status: PASS
+
+PASS: all generated data checks passed

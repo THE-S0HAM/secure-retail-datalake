@@ -1,34 +1,43 @@
-"""Check local prerequisites and PostgreSQL readiness."""
+"""Check pipeline folders, environment, PostgreSQL, and Gold tables."""
 import os
 import sys
-from config.settings import ensure_directories, RAW_DIR, BRONZE_DIR, SILVER_DIR, GOLD_DIR, REPORTS_DIR
-from scripts.database_loader import required_tables_exist, verify_connection
+
+from database import TABLES, get_table_counts, verify_connection
+from pipeline import BRONZE_DIR, GOLD_DIR, RAW_DIR, REPORTS_DIR, SILVER_DIR, ensure_directories
 
 
-def mark(label, result):
-    print(f"{label:<22} {'PASS' if result else 'FAIL'}")
-    return result
+def show_check(name, passed, detail=""):
+    suffix = f" ({detail})" if detail else ""
+    print(f"{name:<22} {'PASS' if passed else 'FAIL'}{suffix}")
+    return passed
 
 
 def run_health_check():
     ensure_directories()
-    print("SECURE RETAIL DATA LAKEHOUSE HEALTH CHECK")
-    checks = []
-    checks.append(mark("Python", sys.version_info >= (3, 10)))
-    checks.append(mark("Directories", all(path.exists() for path in [RAW_DIR, BRONZE_DIR, SILVER_DIR, GOLD_DIR, REPORTS_DIR])))
-    required_env = ["DB_HOST", "DB_PORT", "DB_NAME", "DB_USER", "DB_PASSWORD", "HASH_SALT"]
-    checks.append(mark("Environment", all(os.getenv(name) for name in required_env)))
+    checks = [show_check("Python", sys.version_info >= (3, 10))]
+    folders = [RAW_DIR, BRONZE_DIR, SILVER_DIR, GOLD_DIR, REPORTS_DIR]
+    checks.append(show_check("Folders", all(path.is_dir() for path in folders)))
+    required = ["DB_HOST", "DB_PORT", "DB_NAME", "DB_USER", "DB_PASSWORD", "HASH_SALT"]
+    checks.append(show_check("Environment", all(os.getenv(name) for name in required)))
+
     try:
-        checks.append(mark("PostgreSQL", verify_connection()))
-        checks.append(mark("Tables", required_tables_exist()))
-    except Exception as error:
-        print(f"PostgreSQL             FAIL ({error})")
-        print("Tables                 FAIL (database unavailable)")
-        checks.extend([False, False])
+        verify_connection()
+    except Exception:
+        checks.append(show_check("PostgreSQL", False, "connection failed"))
+        checks.append(show_check("Gold tables", False, "database unavailable"))
+    else:
+        checks.append(show_check("PostgreSQL", True))
+        try:
+            counts = get_table_counts()
+            tables_ok = set(counts) == set(TABLES) and all(count > 0 for count in counts.values())
+            checks.append(show_check("Gold tables", tables_ok, str(counts)))
+        except Exception:
+            checks.append(show_check("Gold tables", False, "table check failed"))
+
     passed = all(checks)
     print(f"Overall Status: {'PASS' if passed else 'FAIL'}")
     return passed
 
 
 if __name__ == "__main__":
-    sys.exit(0 if run_health_check() else 1)
+    raise SystemExit(0 if run_health_check() else 1)

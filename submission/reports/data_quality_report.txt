@@ -1,0 +1,22 @@
+SECURE RETAIL DATA LAKEHOUSE - DATA QUALITY REPORT
+
+Pipeline run ID: run_20260809_052657_cc1b16cd
+
+Dataset: customers
+Rows: 10000
+Missing values: 0
+Duplicate rows: 0
+
+Dataset: products
+Rows: 1000
+Missing values: 0
+Duplicate rows: 0
+
+Dataset: transactions
+Rows: 50000
+Missing values: 0
+Duplicate rows: 0
+
+Validation status: PASS
+Privacy status: PASS
+Overall status: PASS
